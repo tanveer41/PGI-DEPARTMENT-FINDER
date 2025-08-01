@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARATHI 2.0 - Hospital Helpdesk</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url('https://earthnews.in/wp-content/uploads/2023/05/hospital-helpdesk-volunteers.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background-color: rgba(0, 102, 153, 0.8);
+            border-radius: 10px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-bottom: 1rem;
+        }
+
+        .search-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.2rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            background-color: #006699;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #004473;
+        }
+
+        .results {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            color: #333;
+            margin-bottom: 2rem;
+        }
+
+        .department {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 1rem;
+        }
+
+        .department:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .department h3 {
+            color: #006699;
+            margin-bottom: 0.5rem;
+        }
+
+        .department p {
+            margin-bottom: 0.3rem;
+        }
+
+        .navigation {
+            background-color: #e6f2ff;
+            border-left: 4px solid #006699;
+            padding-left: 1rem;
+        }
+
+        .general {
+            background-color: #f0fff0;
+            border-left: 4px solid #2e8b57;
+            padding-left: 1rem;
+        }
+
+        .special-clinic {
+            background-color: #fff0f5;
+            border-left: 4px solid #993366;
+            padding-left: 1rem;
+        }
+
+        .error {
+            color: #d8000c;
+            background-color: #ffd2d2;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .suggestion {
+            color: #006699;
+            font-style: italic;
+            margin-top: 1rem;
+        }
+
+        .welcome-message {
+            padding: 1rem;
+        }
+
+        .welcome-message h3 {
+            color: #006699;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-message p {
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1rem;
+            background-color: rgba(0, 0, 0, 0.7);
+            margin-top: auto;
+        }
+
+        .learn-more {
+            color: white;
+            text-decoration: none;
+            border-bottom: 1px dashed white;
+            transition: color 0.3s;
+        }
+
+        .learn-more:hover {
+            color: #4db8ff;
+        }
+
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 0 2px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .search-box {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SARATHI 2.0</h1>
+            <p class="tagline">Your Hospital Navigation Assistant</p>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="department_name" placeholder="Search for departments, doctors or services..."
+                   value="{{ query }}" onkeypress="handleKeyPress(event)">
+            <button id="search_button">Find Location</button>
+        </div>
+
+        <div class="results" id="results_container">
+            {% if error_message %}
+                <div class="error">{{ error_message }}</div>
+            {% endif %}
+
+            {% if department_results or navigation_results or building_results %}
+                {% if department_results %}
+                    <h2>Department Results</h2>
+                    {% for dept in department_results %}
+                        <div class="department {{ 'special-clinic' if dept.opd_type == 'special clinic' else 'general' }}">
+                            <h3>{{ dept.department }}</h3>
+                            <p><strong>Location:</strong> {{ dept.level|string + ' Floor' if dept.level is not none else '' }}, {{ dept.building }}</p>
+                            {% if dept.room_no %}<p><strong>Room:</strong> {{ dept.room_no }}</p>{% endif %}
+                            {% if dept.counters %}<p><strong>Counters:</strong> {{ dept.counters }}</p>{% endif %}
+                            {% if dept.doctors %}<p><strong>Doctors:</strong> {{ dept.doctors }}</p>{% endif %}
+                            <p><strong>Timings:</strong> {{ dept.days }} {{ dept.notes }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if navigation_results %}
+                    <h2>Service Counters</h2>
+                    {% for nav in navigation_results %}
+                        <div class="department navigation">
+                            <h3>{{ nav.department }}</h3>
+                            <p><strong>Location:</strong> {{ nav.level|string + ' Floor' if nav.level is not none else '' }}, {{ nav.building }}</p>
+                            {% if nav.counters %}<p><strong>Counters:</strong> {{ nav.counters }}</p>{% endif %}
+                            <p><strong>Timings:</strong> {{ nav.days }} {{ nav.notes }}</p>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if suggestion %}
+                    <div class="suggestion">
+                        Did you mean: <a href="#" onclick="document.getElementById('department_name').value='{{ suggestion }}'; performSearch(); return false;">{{ suggestion }}</a>?
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="welcome-message">
+                    <h3>Welcome to SARATHI 2.0</h3>
+                    <p>Search for any hospital department or service to find its location, operating hours, and contact information.</p>
+                    <p>Try searching by counter number (e.g. "25"), department name, or building.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <footer>
+        <p>Learn more about the <a href="https://earthnews.in/seva-se-seekhen-how-indias-youth-are-revolutionizing-hospital-helpdesks/" class="learn-more">SARATHI initiative</a></p>
+        <p>Built Proudly by Shubham, Inderpreet & Tanveer, students of SGGSC-26, Chandigarh under SARATHI Mission</p>
+    </footer>
+
+    <script>
+        document.getElementById('search_button').addEventListener('click', performSearch);
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        }
+
+        function performSearch() {
+            const query = document.getElementById('department_name').value.trim();
+            const resultsContainer = document.getElementById('results_container');
+
+            if (query === '') {
+                resultsContainer.innerHTML = `
+                    <div class="error">
+                        Please enter a department name to search
+                    </div>
+                    <div class="welcome-message">
+                        <h3>Welcome to SARATHI</h3>
+                        <p>Search for any hospital department or service to find its location, operating hours, and contact information.</p>
+                        <p>Try searching by counter number (e.g. "25"), department name, or building.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            resultsContainer.innerHTML = '<p>Searching... Please wait</p>';
+
+            fetch(`/index.html?search_query=${encodeURIComponent(query)}`, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data);
+            })
+            .catch(error => {
+                resultsContainer.innerHTML = `
+                    <div class="error">
+                        An error occurred while searching. Please try again.
+                    </div>
+                `;
+                console.error('Error:', error);
+            });
+        }
+
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('results_container');
+
+            if (data.error_message) {
+                resultsContainer.innerHTML = `
+                    <div class="error">
+                        ${data.error_message}
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            const query = document.getElementById('department_name').value;
+
+            if (data.department_results && data.department_results.length > 0) {
+                html += '<h2>Department Results</h2>';
+                data.department_results.forEach(dept => {
+                    html += `
+                        <div class="department ${dept.opd_type === 'special clinic' ? 'special-clinic' : 'general'}">
+                            <h3>${highlightMatches(dept.department, query)}</h3>
+                            <p><strong>Location:</strong> ${dept.level !== null ? dept.level + ' Floor' : ''}, ${highlightMatches(dept.building, query)}</p>
+                            ${dept.room_no ? `<p><strong>Room:</strong> ${highlightMatches(dept.room_no, query)}</p>` : ''}
+                            ${dept.counters ? `<p><strong>Counters:</strong> ${highlightMatches(dept.counters, query)}</p>` : ''}
+                            ${dept.doctors ? `<p><strong>Doctors:</strong> ${dept.doctors}</p>` : ''}
+                            <p><strong>Timings:</strong> ${dept.days} ${dept.notes}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            if (data.navigation_results && data.navigation_results.length > 0) {
+                html += '<h2>Service Counters</h2>';
+                data.navigation_results.forEach(nav => {
+                    html += `
+                        <div class="department navigation">
+                            <h3>${highlightMatches(nav.department, query)}</h3>
+                            <p><strong>Location:</strong> ${nav.level !== null ? nav.level + ' Floor' : ''}, ${highlightMatches(nav.building, query)}</p>
+                            ${nav.counters ? `<p><strong>Counters:</strong> ${highlightMatches(nav.counters, query)}</p>` : ''}
+                            <p><strong>Timings:</strong> ${nav.days} ${nav.notes}</p>
+                        </div>
+                    `;
+                });
+            }
+
+            if (data.suggestion) {
+                html += `
+                    <div class="suggestion">
+                        Did you mean: <a href="#" onclick="document.getElementById('department_name').value='${data.suggestion}'; performSearch(); return false;">${data.suggestion}</a>?
+                    </div>
+                `;
+            }
+
+            if (html === '') {
+                html = `
+                    <div class="error">
+                        No results found for your search. Please try different keywords.
+                        <p>Try searching by counter number (e.g. "25"), department name, or building.</p>
+                    </div>
+                `;
+            }
+
+            resultsContainer.innerHTML = html;
+        }
+
+        function highlightMatches(text, query) {
+            if (!query || !text) return text;
+
+            // Convert to string if not already
+            text = text.toString();
+
+            // Highlight numbers first
+            const queryNumbers = query.match(/\d+/g) || [];
+            let highlighted = text;
+
+            queryNumbers.forEach(num => {
+                const regex = new RegExp(num, 'g');
+                highlighted = highlighted.replace(regex, `<span class="highlight">${num}</span>`);
+            });
+
+            // Highlight text matches (case insensitive)
+            const queryText = query.replace(/\d+/g, '').trim();
+            if (queryText) {
+                const regex = new RegExp(queryText, 'gi');
+                highlighted = highlighted.replace(regex, match => `<span class="highlight">${match}</span>`);
+            }
+
+            return highlighted;
+        }
+    </script>
+</body>
+</html>

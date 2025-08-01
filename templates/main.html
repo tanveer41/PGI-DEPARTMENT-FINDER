@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SARATHI 2.0 – Hospital Helpdesk Portal</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        body {
+            background-color: #f0f8ff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 300px; /* Adjust based on your logo size */
+            width: 100%;
+            height: auto;
+            margin: 0 auto 15px;
+            display: block;
+        }
+
+        .tagline {
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .button-container a {
+            text-decoration: none;
+            background-color: #007bff;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-container a:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            margin-top: 50px;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 600px) {
+            .logo {
+                max-width: 250px; /* Smaller logo on mobile */
+            }
+            .container {
+                padding: 30px 15px;
+            }
+            .button-container a {
+                padding: 12px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <!-- Replace text with logo image -->
+            <img src="/static/images/sarathi-logo.png" alt="SARATHI Logo" class="logo">
+            <p class="tagline">Your Hospital Navigation Assistant</p>
+        </header>
+
+        <div class="button-container">
+            <a href="/index.html">🔍 NOPD – New OPD Building Helpdesk</a>
+            <a href="/aec_index.html">🩺 AEC – Advanced Eye Center Finder</a>
+        </div>
+
+        <footer>
+            <p>Learn more about the <a href="https://earthnews.in/seva-se-seekhen-how-indias-youth-are-revolutionizing-hospital-helpdesks/" target="_blank">SARATHI initiative</a></p>
+            <p>Built Proudly by Shubham, Inderpreet & Tanveer, students of SGGSC-26, Chandigarh under SARATHI Mission</p>
+        </footer>
+    </div>
+</body>
+</html>

@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEC Advanced Eye Center Finder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #e6f7ff;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        h1 {
+            color: #004d99;
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 1.8em;
+        }
+        .subtitle {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            font-size: 1em;
+            color: #555;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 12px 18px;
+            border: 1px solid #a8d5ff;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .results-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px; /* Minimum width to prevent shrinking */
+        }
+        .results-table th, .results-table td {
+            border: 1px solid #b3e0ff;
+            padding: 8px;
+            text-align: left;
+            white-space: nowrap; /* Prevent text wrapping */
+        }
+        .results-table th {
+            background-color: #007bff;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        .results-table tr:nth-child(even) {
+            background-color: #f2f9ff;
+        }
+        .results-table tr:hover {
+            background-color: #e6f2ff;
+        }
+        .no-results, .suggestion-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1em;
+            color: #666;
+        }
+        .suggestion-link {
+            color: #007bff;
+            text-decoration: underline;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .suggestion-link:hover {
+            color: #0056b3;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                margin: 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+            .results-table th, .results-table td {
+                padding: 6px;
+                font-size: 13px;
+            }
+            /* Add scrollbar styling for mobile */
+            .results-container::-webkit-scrollbar {
+                height: 5px;
+            }
+            .results-container::-webkit-scrollbar-thumb {
+                background: #007bff;
+                border-radius: 5px;
+            }
+            .results-container::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AEC Advanced Eye Center Finder</h1>
+        <p class="subtitle">
+            Developed by: Shubham, Inder & Tanveer<br>
+            Sri Guru Gobind Singh College, Sector 26
+        </p>
+        <form method="POST" action="/aec_index.html">
+            <input type="text" name="search_query" placeholder="Search for a department or service (e.g., Retina Lab, Payments, Retinoblastoma)" value="{{ query }}">
+            <button type="submit">Search</button>
+        </form>
+
+        {% if query and not results %}
+            <p class="no-results">
+                No exact or partial matches found for "{{ query }}".
+                {% if suggestion %}
+                    Did you mean:
+                    <a href="/aec_index.html?search_query={{ suggestion }}" class="suggestion-link">{{ suggestion }}</a>?
+                {% endif %}
+            </p>
+        {% endif %}
+
+        {% if results %}
+            <div class="results-container">
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Department/Service</th>
+                            <th>Floor</th>
+                            <th>Block/Area</th>
+                            <th>Room/Counter No.</th>
+                            <th>Operating Days</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in results %}
+                            <tr>
+                                <td>{{ item.department }}</td>
+                                <td>{{ item.floor }}</td>
+                                <td>{{ item.block_area }}</td>
+                                <td>{{ item.room_counter_no }}</td>
+                                <td>{{ item.days }}</td>
+                                <td>{{ item.notes }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+        {% if error_message %}
+            <p class="no-results" style="color: red;">{{ error_message }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>

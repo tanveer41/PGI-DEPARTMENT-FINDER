@@ -1,0 +1,4 @@
+Flask
+fuzzywuzzy
+python-Levenshtein
+rapidfuzz
